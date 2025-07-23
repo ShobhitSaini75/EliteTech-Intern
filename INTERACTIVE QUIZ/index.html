@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Interactive Quiz App</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background: #f4f6fc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .quiz-box {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    #progress {
+      text-align: right;
+      color: #777;
+      margin-bottom: 10px;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 15px;
+      font-weight: 600;
+    }
+
+    .option {
+      background: #f0f2f5;
+      padding: 10px;
+      border-radius: 10px;
+      margin: 8px 0;
+      cursor: pointer;
+      border: 2px solid transparent;
+    }
+
+    .option:hover {
+      background: #e1e5ec;
+    }
+
+    .correct {
+      background: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    #next {
+      margin-top: 20px;
+      background: #4a6cf7;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: none;
+    }
+
+    #score {
+      text-align: center;
+      font-size: 22px;
+      margin-top: 20px;
+      color: #2c3e50;
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-box">
+    <h1>🧠 Interactive Quiz Application</h1>
+    <div id="progress"></div>
+    <div class="question" id="question">Loading...</div>
+    <div id="options"></div>
+    <button id="next">Next ➤</button>
+    <div id="score"></div>
+  </div>
+
+  <script>
+    // Quiz questions
+    const questions = [
+      {
+        question: "What does HTML stand for?",
+        options: ["HyperText Markup Language", "HighText Machine Language", "HyperTool Multi Language", "Hyperlinks Text Mark Language"],
+        answer: "HyperText Markup Language"
+      },
+      {
+        question: "Which language runs in a browser?",
+        options: ["Java", "C", "Python", "JavaScript"],
+        answer: "JavaScript"
+      },
+      {
+        question: "What does CSS stand for?",
+        options: ["Creative Style Sheet", "Cascading Style Sheet", "Computer Style Sheet", "Colorful Style Sheet"],
+        answer: "Cascading Style Sheet"
+      },
+      {
+        question: "Which is not a JavaScript framework?",
+        options: ["React", "Vue", "Angular", "Django"],
+        answer: "Django"
+      },
+      {
+        question: "Inside which HTML element do we put JavaScript?",
+        options: ["<js>", "<javascript>", "<script>", "<code>"],
+        answer: "<script>"
+      }
+    ];
+
+    // Getting HTML elements
+    const questionBox = document.getElementById("question");
+    const optionsBox = document.getElementById("options");
+    const nextBtn = document.getElementById("next");
+    const scoreBox = document.getElementById("score");
+    const progressBox = document.getElementById("progress");
+
+    let index = 0;
+    let score = 0;
+    let isAnswered = false;
+
+    // Load question
+    function loadQuestion() {
+      isAnswered = false;
+      questionBox.textContent = questions[index].question;
+      progressBox.textContent = `Question ${index + 1} of ${questions.length}`;
+      optionsBox.innerHTML = "";
+
+      questions[index].options.forEach(option => {
+        let btn = document.createElement("div");
+        btn.className = "option";
+        btn.textContent = option;
+
+        btn.onclick = function () {
+          if (isAnswered) return;
+          isAnswered = true;
+          if (option === questions[index].answer) {
+            btn.classList.add("correct");
+            score++;
+          } else {
+            btn.classList.add("wrong");
+            // show correct one
+            let allOptions = document.querySelectorAll(".option");
+            allOptions.forEach(opt => {
+              if (opt.textContent === questions[index].answer) {
+                opt.classList.add("correct");
+              }
+            });
+          }
+          nextBtn.style.display = "block";
+        };
+
+        optionsBox.appendChild(btn);
+      });
+
+      nextBtn.style.display = "none";
+    }
+
+    // Next button
+    nextBtn.onclick = function () {
+      index++;
+      if (index < questions.length) {
+        loadQuestion();
+      } else {
+        showScore();
+      }
+    };
+
+    // Show final score
+    function showScore() {
+      questionBox.textContent = "✅ Quiz Completed!";
+      optionsBox.innerHTML = "";
+      nextBtn.style.display = "none";
+      progressBox.textContent = "";
+      scoreBox.innerHTML = `🎯 Your Score: <strong>${score}</strong> out of <strong>${questions.length}</strong>`;
+    }
+
+    // Start quiz
+    loadQuestion();
+  </script>
+</body>
+</html>
